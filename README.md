@@ -11,6 +11,10 @@ Windows Server 2016
 3. Find out the MD5 hash of iso
 4. Move iso to cloned directory
 5. Run 
- >packer build \
-  >  -var iso_url=./iso/14393.0.161119-1705.RS1_REFRESH_SERVER_EVAL_X64FRE_EN-US.ISO \
-   > -var iso_checksum=70721288bbcdfe3239d8f8c0fae55f1f windows_2016.json
+ >packer build DmitroOliinikDemoPackerFile.json
+ ## Up with Vagrant
+ 1. Run 
+ > vagrant init <name of you'r box>
+ 2. Run 
+ > vagrant up
+ 3. Wait while you'r VM is preparing

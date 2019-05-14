@@ -1,0 +1,102 @@
+{
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "iso_url": "{{user `iso_url`}}",
+      "iso_checksum_type": "{{user `iso_checksum_type`}}",
+      "iso_checksum": "{{user `iso_checksum`}}",
+      "headless": true,
+      "boot_wait": "2m",
+      "ssh_username": "vagrant",
+      "ssh_password": "vagrant",
+      "ssh_wait_timeout": "6h",
+      "shutdown_command": "shutdown /s /t 10 /f /d p:4:1 /c \"Packer Shutdown\"",
+      "guest_os_type": "Windows2016_64",
+      "disk_size": 61440,
+      "floppy_files": [
+        "{{user `autounattend`}}",
+        "./scripts/openssh.ps1"
+      ],
+      "vboxmanage": [
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--memory",
+          "4096"
+        ],
+        [
+          "modifyvm",
+          "{{.Name}}",
+          "--cpus",
+          "2"
+        ]
+      ]
+    }
+  ],
+  "provisioners": [
+    {
+      "type": "shell",
+      "remote_path": "/tmp/script.bat",
+      "execute_command": "{{.Vars}} cmd /c C:/Windows/Temp/script.bat",
+      "scripts": [
+        "./scripts/vm-guest-tools.bat",
+        "./scripts/vagrant-ssh.bat",
+        "./scripts/enable-rdp.bat"
+      ]
+    },
+      {
+        "type": "powershell",
+        "script": "scripts/chocolatey.ps1"
+      },
+    {
+      "type": "windows-restart"
+    },
+      {
+        "type": "powershell",
+        "pause_before": "120s",
+        "script": "scripts/myScripts/git_install.ps1"
+      },
+      {
+        "type": "powershell",
+        "pause_before": "120s",
+        "script": "scripts/myScripts/install_Net.ps1"
+      },
+    {
+      "type": "windows-restart"
+    },
+    {
+      "type": "powershell",
+      "pause_before": "120s",
+      "script": "scripts/myScripts/IIS_install.ps1"
+    },
+    {
+      "type": "powershell",
+      "pause_before": "120s",
+      "script": "scripts/myScripts/clone_game_store.ps1"
+    },
+    {
+      "type": "powershell",
+      "pause_before": "120s",
+      "script": "scripts/myScripts/install_SQL.ps1"
+    },    
+    {
+      "type": "powershell",
+      "pause_before": "120s",
+      "script": "scripts/myScripts/add_app_to_server.ps1"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "keep_input_artifact": false,
+      "output": "windows_2016_{{.Provider}}.box",
+      "vagrantfile_template": "vagrantfile-windows_2016.template"
+    }
+  ],
+  "variables": {
+    "iso_url": "D:\\SoftServe\\Demo1\\Windows_Server_2016_Datacenter_EVAL_en-us_14393_refresh.ISO",
+    "iso_checksum_type": "md5",
+    "iso_checksum": "70721288bbcdfe3239d8f8c0fae55f1f",
+    "autounattend": "./Autounattend.xml"
+  }
+}

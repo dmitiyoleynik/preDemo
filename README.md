@@ -18,3 +18,4 @@ Windows Server 2016
  2. Run 
  > vagrant up
  3. Wait while you'r VM is preparing
+ 4. Using you'r VM
